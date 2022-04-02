@@ -10,7 +10,7 @@ fun LoginScreen(navController: NavHostController) {
     Scaffold(
         topBar = { LoginTopBar() },
         content = {
-            LoginContent(signedInState = false, messageBarState = MessageBarState()) {
+            LoginContent(signedInState = true, messageBarState = MessageBarState()) {
 
             }
         }
