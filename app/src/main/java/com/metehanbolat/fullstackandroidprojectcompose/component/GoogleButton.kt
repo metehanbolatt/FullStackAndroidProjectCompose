@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.metehanbolat.fullstackandroidprojectcompose.R
 import com.metehanbolat.fullstackandroidprojectcompose.ui.theme.LoadingBlue
@@ -29,6 +30,7 @@ fun GoogleButton(
     shape: Shape = Shapes.medium,
     borderColor: Color = Color.LightGray,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    borderStokeWidth: Dp = 1.dp,
     progressIndicatorColor: Color = LoadingBlue,
     onClick: () -> Unit
 ) {
@@ -40,21 +42,16 @@ fun GoogleButton(
 
     Surface(
         modifier = modifier
-            .clickable(enabled = loadingState) {
+            .clickable(enabled = !loadingState) {
                 onClick()
             },
         shape = shape,
-        border = BorderStroke(width = 1.dp, color = borderColor),
+        border = BorderStroke(width = borderStokeWidth, color = borderColor),
         color = backgroundColor
     ) {
         Row(
             modifier = Modifier
-                .padding(
-                    start = 12.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
-                )
+                .padding(12.dp)
                 .animateContentSize(
                     animationSpec = tween(
                         durationMillis = 300,
