@@ -17,9 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.metehanbolat.fullstackandroidprojectcompose.R
 import com.metehanbolat.fullstackandroidprojectcompose.domain.model.MessageBarState
 import com.metehanbolat.fullstackandroidprojectcompose.ui.theme.ErrorRed
 import com.metehanbolat.fullstackandroidprojectcompose.ui.theme.InfoGreen
@@ -37,7 +39,7 @@ fun MessageBar(messageBarState: MessageBarState) {
         if (messageBarState.error != null) {
             errorMessage = when(messageBarState.error) {
                 is SocketTimeoutException -> { "Connection Timeout Exception." }
-                is ConnectException -> { "Internet Connection Unavailable" }
+                is ConnectException -> { "Internet Connection Unavailable." }
                 else -> { "${messageBarState.error.message}" }
             }
         }
@@ -67,7 +69,7 @@ fun MessageBar(messageBarState: MessageBarState) {
         ) {
             Icon(
                 imageVector = if (messageBarState.error != null) Icons.Default.Warning else Icons.Default.Check,
-                contentDescription = "Message Bar Icon",
+                contentDescription = stringResource(id = R.string.message_bar_icon),
                 tint = Color.White
             )
             Divider(modifier = Modifier.width(12.dp), color = Color.Transparent)
