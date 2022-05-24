@@ -1,6 +1,7 @@
 package com.metehanbolat.fullstackandroidprojectcompose.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.metehanbolat.fullstackandroidprojectcompose.data.remote.KtorApi
 import com.metehanbolat.fullstackandroidprojectcompose.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -46,5 +47,11 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(Json.asConverterFactory(contentType))
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKtorApi(retrofit: Retrofit): KtorApi {
+        return retrofit.create(KtorApi::class.java)
     }
 }
