@@ -5,8 +5,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.metehanbolat.fullstackandroidprojectcompose.domain.model.ApiRequest
+import com.metehanbolat.fullstackandroidprojectcompose.domain.model.ApiResponse
 import com.metehanbolat.fullstackandroidprojectcompose.domain.model.MessageBarState
 import com.metehanbolat.fullstackandroidprojectcompose.domain.repository.Repository
+import com.metehanbolat.fullstackandroidprojectcompose.util.RequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -24,6 +27,9 @@ class LoginViewModel @Inject constructor(
     private val _messageBarState: MutableState<MessageBarState> = mutableStateOf(MessageBarState())
     val messageBarState: State<MessageBarState> = _messageBarState
 
+    private val _apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
+    val apiResponse: State<RequestState<ApiResponse>> = _apiResponse
+
     init {
         viewModelScope.launch {
             repository.readSignedInState().collect { completed ->
@@ -40,6 +46,23 @@ class LoginViewModel @Inject constructor(
 
     fun updateMessageBarState() {
         _messageBarState.value = MessageBarState(error = GoogleAccountNotFoundException())
+    }
+
+    fun verifyTokenBackend(request: ApiRequest) {
+        _apiResponse.value = RequestState.Loading
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                val response = repository.verifyTokenOnBackend(request = request)
+                _apiResponse.value = RequestState.Success(data = response)
+                _messageBarState.value = MessageBarState(
+                    message = response.message,
+                    error = response.error
+                )
+            }
+        } catch (e: Exception) {
+            _apiResponse.value = RequestState.Error(t = e)
+            _messageBarState.value = MessageBarState(error = e)
+        }
     }
 
 }

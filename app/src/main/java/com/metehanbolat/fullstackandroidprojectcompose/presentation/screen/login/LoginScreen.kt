@@ -1,15 +1,19 @@
 package com.metehanbolat.fullstackandroidprojectcompose.presentation.screen.login
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.metehanbolat.fullstackandroidprojectcompose.domain.model.ApiRequest
+import com.metehanbolat.fullstackandroidprojectcompose.domain.model.ApiResponse
+import com.metehanbolat.fullstackandroidprojectcompose.navigation.Screen
 import com.metehanbolat.fullstackandroidprojectcompose.presentation.screen.common.StartActivityForResult
 import com.metehanbolat.fullstackandroidprojectcompose.presentation.screen.common.signIn
+import com.metehanbolat.fullstackandroidprojectcompose.util.RequestState
 
 @Composable
 fun LoginScreen(
@@ -18,6 +22,7 @@ fun LoginScreen(
 ) {
     val signedInState by loginViewModel.signedState
     val messageBarState by loginViewModel.messageBarState
+    val apiResponse by loginViewModel.apiResponse
 
     Scaffold(
         topBar = { LoginTopBar() },
@@ -36,7 +41,9 @@ fun LoginScreen(
     StartActivityForResult(
         key = signedInState,
         onResultReceived = { tokenId ->
-            Log.d("LoginScreen", tokenId)
+            loginViewModel.verifyTokenBackend(
+                request = ApiRequest(tokenId = tokenId)
+            )
         },
         onDialogDismissed = { loginViewModel.saveSignedInState(signedIn = false) }
     ) { activityLauncher ->
@@ -51,6 +58,28 @@ fun LoginScreen(
                     loginViewModel.updateMessageBarState()
                 }
             )
+        }
+    }
+
+    LaunchedEffect(key1 = apiResponse) {
+        when(apiResponse) {
+            is RequestState.Success -> {
+                val response = (apiResponse as RequestState.Success<ApiResponse>).data.success
+                if (response) {
+                    navigateToProfileScreen(navController = navController)
+                } else {
+                    loginViewModel.saveSignedInState(signedIn = false)
+                }
+            }
+            else -> {}
+        }
+    }
+}
+
+private fun navigateToProfileScreen(navController: NavHostController) {
+    navController.navigate(route = Screen.Profile.route) {
+        popUpTo(route = Screen.Login.route) {
+            inclusive = true
         }
     }
 }
